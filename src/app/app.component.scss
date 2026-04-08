@@ -19,6 +19,11 @@
   z-index: 100;
   backdrop-filter: blur(12px);
 
+  @media (max-width: 640px) {
+    padding: 0 1rem;
+    height: 56px;
+  }
+
   &__brand {
     display: flex;
     align-items: center;
@@ -39,11 +44,20 @@
     font-weight: 700;
     color: var(--app-text);
     letter-spacing: 0.04em;
+
+    @media (max-width: 400px) {
+      font-size: 1rem;
+    }
   }
 
+  // Links: visibles en desktop, ocultos en mobile
   &__links {
     display: flex;
     gap: 0.25rem;
+
+    @media (max-width: 640px) {
+      display: none;
+    }
   }
 
   &__link {
@@ -68,6 +82,108 @@
       color: var(--app-accent);
       background: rgba(0, 196, 180, 0.12);
       font-weight: 500;
+    }
+  }
+
+  // Botón hamburguesa: oculto en desktop, visible en mobile
+  &__hamburger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--app-border);
+    background: transparent;
+    color: var(--app-text);
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    i { font-size: 1.1rem; }
+
+    &:hover {
+      background: var(--app-surface-2);
+    }
+
+    @media (max-width: 640px) {
+      display: flex;
+    }
+  }
+}
+
+// ── Menú mobile ───────────────────────────────────────────────────
+.app-mobile-menu {
+  display: none; // solo en mobile
+
+  @media (max-width: 640px) {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: var(--app-surface);
+    border-bottom: 1px solid var(--app-border);
+    padding: 0.5rem;
+    gap: 0.25rem;
+
+    // Estado cerrado
+    transform: translateY(-6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+
+    &--open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}
+
+.app-mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  color: var(--app-text-muted);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: all 0.15s ease;
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    color: var(--app-text);
+    background: var(--app-surface-2);
+  }
+
+  &--active {
+    color: var(--app-accent);
+    background: rgba(0, 196, 180, 0.12);
+    font-weight: 500;
+  }
+}
+
+// ── Backdrop ──────────────────────────────────────────────────────
+.app-backdrop {
+  display: none;
+
+  @media (max-width: 640px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 98;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+
+    &--visible {
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 }

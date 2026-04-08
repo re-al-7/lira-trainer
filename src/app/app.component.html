@@ -7,6 +7,7 @@
       <span class="app-nav__title">Lira Trainer</span>
     </div>
 
+    <!-- Links desktop -->
     <div class="app-nav__links">
       <a
         *ngFor="let item of navItems"
@@ -18,7 +19,38 @@
         <span>{{ item.label }}</span>
       </a>
     </div>
+
+    <!-- Botón hamburguesa (solo mobile) -->
+    <button
+      class="app-nav__hamburger"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="menuOpen()"
+      aria-label="Menú"
+    >
+      <i [class]="menuOpen() ? 'pi pi-times' : 'pi pi-bars'"></i>
+    </button>
   </nav>
+
+  <!-- Menú mobile desplegable -->
+  <div class="app-mobile-menu" [class.app-mobile-menu--open]="menuOpen()">
+    <a
+      *ngFor="let item of navItems"
+      [routerLink]="item.route"
+      routerLinkActive="app-mobile-link--active"
+      class="app-mobile-link"
+      (click)="closeMenu()"
+    >
+      <i [class]="item.icon"></i>
+      <span>{{ item.label }}</span>
+    </a>
+  </div>
+
+  <!-- Backdrop -->
+  <div
+    class="app-backdrop"
+    [class.app-backdrop--visible]="menuOpen()"
+    (click)="closeMenu()"
+  ></div>
 
   <!-- Contenido principal -->
   <main class="app-main">

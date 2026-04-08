@@ -1,18 +1,13 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
-import { BadgeModule } from 'primeng/badge';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule, RouterOutlet, RouterLink, RouterLinkActive,
-    MenubarModule, ButtonModule, BadgeModule,
-  ],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ButtonModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
@@ -22,4 +17,19 @@ export class AppComponent {
     { label: 'Partituras',  route: '/scores',   icon: 'pi pi-file-edit'  },
     { label: 'Práctica',    route: '/practice', icon: 'pi pi-play-circle' },
   ];
+
+  readonly menuOpen = signal(false);
+
+  toggleMenu(): void {
+    this.menuOpen.update(v => !v);
+  }
+
+  closeMenu(): void {
+    this.menuOpen.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.closeMenu();
+  }
 }
