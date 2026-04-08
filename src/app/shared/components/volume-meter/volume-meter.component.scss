@@ -1,0 +1,45 @@
+.volume-meter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  &__icon {
+    color: var(--app-text-muted);
+    font-size: 0.9rem;
+  }
+
+  &__bar {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    color: var(--app-text-muted);
+    min-width: 32px;
+    text-align: right;
+    font-family: monospace;
+  }
+
+  ::ng-deep {
+    .volume-bar {
+      height: 8px !important;
+      border-radius: 4px !important;
+      background: var(--app-surface-2) !important;
+
+      .p-progressbar-value {
+        border-radius: 4px !important;
+        transition: width 0.08s ease;
+        background: var(--app-accent) !important;
+      }
+    }
+
+    .volume-bar.volume-high .p-progressbar-value {
+      background: var(--app-warning) !important;
+    }
+
+    .volume-bar.volume-clipping .p-progressbar-value {
+      background: var(--app-danger) !important;
+    }
+  }
+}

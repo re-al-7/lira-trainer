@@ -1,0 +1,195 @@
+.tuner-page {
+  padding: 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+
+  &__header {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  &__title {
+    font-size: 2rem;
+    color: var(--app-text);
+    margin-bottom: 0.4rem;
+  }
+
+  &__subtitle {
+    font-size: 0.95rem;
+  }
+
+  &__error {
+    margin-bottom: 1.5rem;
+
+    ::ng-deep .error-card {
+      border-color: var(--app-danger) !important;
+      background: rgba(248, 113, 113, 0.06) !important;
+    }
+  }
+}
+
+// ── Grid principal ──────────────────────────────────────────────
+.tuner-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1.25rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Cards ───────────────────────────────────────────────────────
+::ng-deep {
+  .tuner-card {
+    .p-card-body { padding: 1.25rem; }
+
+    &--main { grid-column: 1; grid-row: 1; }
+    &--knob  { grid-column: 2; grid-row: 1; }
+    &--mic   { grid-column: 1; grid-row: 2; }
+    &--reference { grid-column: 2; grid-row: 2; }
+
+    @media (max-width: 640px) {
+      &--main, &--knob, &--mic, &--reference {
+        grid-column: 1;
+        grid-row: auto;
+      }
+    }
+  }
+}
+
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0;
+}
+
+.card-header-label {
+  font-family: var(--app-font-display);
+  font-size: 0.9rem;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+// ── Nota central ────────────────────────────────────────────────
+.note-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+// ── Knob ────────────────────────────────────────────────────────
+.knob-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.knob-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 160px;
+  font-size: 0.75rem;
+}
+
+.cents-display {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  background: var(--app-surface-2);
+
+  &.cents-perfect { color: var(--app-success); }
+  &.cents-close   { color: var(--app-warning); }
+  &.cents-off     { color: var(--app-danger); }
+}
+
+::ng-deep {
+  .knob-perfect .p-knob-range { stroke: var(--app-success) !important; }
+  .knob-close   .p-knob-range { stroke: var(--app-warning) !important; }
+  .knob-off     .p-knob-range { stroke: var(--app-danger)  !important; }
+  .p-knob-text { fill: var(--app-text) !important; font-family: var(--app-font-body) !important; }
+}
+
+// ── Mic controls ────────────────────────────────────────────────
+.mic-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mic-btn {
+  width: 100%;
+}
+
+.volume-section {
+  padding-top: 0.25rem;
+}
+
+.mic-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--app-text-muted);
+  transition: background 0.3s;
+
+  &--active {
+    background: var(--app-success);
+    animation: pulse-dot 1.5s infinite;
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.mic-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  padding: 0.5rem;
+  background: var(--app-surface-2);
+  border-radius: var(--app-radius);
+}
+
+// ── Referencia de notas ─────────────────────────────────────────
+.note-reference-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+  padding: 0.5rem 0;
+}
+
+.note-ref-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.2rem;
+  border-radius: 8px;
+  font-family: var(--app-font-display);
+  font-size: 0.8rem;
+  background: var(--app-surface-2);
+  border: 1px solid var(--app-border);
+  color: var(--app-text-muted);
+  transition: all 0.15s ease;
+  cursor: default;
+
+  &--active {
+    background: var(--app-accent);
+    border-color: var(--app-accent);
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 0 12px var(--app-accent-glow);
+    transform: scale(1.08);
+  }
+}

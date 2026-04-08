@@ -1,0 +1,143 @@
+// ============================================================
+// LIRA TRAINER — Global Styles
+// ============================================================
+
+:root {
+  --app-bg: #0a0a14;
+  --app-surface: #12121f;
+  --app-surface-2: #1a1a2e;
+  --app-border: rgba(255, 255, 255, 0.08);
+  --app-text: #e8e8f0;
+  --app-text-muted: #7a7a9a;
+  --app-accent: #00c4b4;        // teal principal
+  --app-accent-glow: rgba(0, 196, 180, 0.3);
+  --app-success: #4ade80;
+  --app-warning: #fbbf24;
+  --app-danger: #f87171;
+  --app-font-display: 'Cinzel', serif;
+  --app-font-body: 'Inter', sans-serif;
+  --app-radius: 12px;
+  --app-radius-lg: 20px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  font-family: var(--app-font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+// ── Scrollbar personalizado ──────────────────────────────────
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--app-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--app-accent);
+  border-radius: 3px;
+}
+
+// ── Tipografía base ──────────────────────────────────────────
+h1, h2, h3 {
+  font-family: var(--app-font-display);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+// ── Utilidades ───────────────────────────────────────────────
+.glow-accent {
+  box-shadow: 0 0 20px var(--app-accent-glow);
+}
+
+.text-accent {
+  color: var(--app-accent);
+}
+
+.text-muted {
+  color: var(--app-text-muted);
+}
+
+.card-dark {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+  padding: 1.5rem;
+}
+
+// ── Override PrimeNG para el tema oscuro ─────────────────────
+.p-component {
+  font-family: var(--app-font-body);
+}
+
+.p-card {
+  background: var(--app-surface) !important;
+  border: 1px solid var(--app-border) !important;
+  border-radius: var(--app-radius-lg) !important;
+
+  .p-card-title {
+    font-family: var(--app-font-display);
+    color: var(--app-text);
+  }
+}
+
+.p-button.p-button-teal {
+  background: var(--app-accent);
+  border-color: var(--app-accent);
+
+  &:hover {
+    background: darken(#00c4b4, 5%);
+    box-shadow: 0 0 15px var(--app-accent-glow);
+  }
+}
+
+.p-tabview {
+  .p-tabview-nav {
+    background: var(--app-surface);
+    border-color: var(--app-border);
+  }
+  .p-tabview-panels {
+    background: var(--app-bg);
+  }
+}
+
+// ── Animaciones globales ─────────────────────────────────────
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px var(--app-accent-glow); }
+  50%       { box-shadow: 0 0 30px var(--app-accent-glow), 0 0 60px var(--app-accent-glow); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes note-pop {
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-note-pop {
+  animation: note-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}

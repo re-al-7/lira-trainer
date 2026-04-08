@@ -1,0 +1,28 @@
+<div class="app-shell">
+
+  <!-- Navbar -->
+  <nav class="app-nav">
+    <div class="app-nav__brand">
+      <span class="app-nav__logo">♪</span>
+      <span class="app-nav__title">Lira Trainer</span>
+    </div>
+
+    <div class="app-nav__links">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="app-nav__link--active"
+        class="app-nav__link"
+      >
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

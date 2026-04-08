@@ -1,0 +1,159 @@
+<div class="score-viewer-page animate-fade-in-up">
+
+  <div class="score-viewer-page__header">
+    <h1 class="score-viewer-page__title">Partituras</h1>
+    <p class="score-viewer-page__subtitle text-muted">
+      Carga un archivo MusicXML o MIDI, o elige una partitura de ejemplo
+    </p>
+  </div>
+
+  <div class="score-layout">
+
+    <!-- Sidebar: carga y selección -->
+    <div class="score-sidebar">
+
+      <!-- Subir archivo -->
+      <p-card styleClass="sidebar-card">
+        <ng-template pTemplate="header">
+          <div class="card-header-row">
+            <span class="card-header-label">Cargar archivo</span>
+          </div>
+        </ng-template>
+
+        <p-fileUpload
+          mode="basic"
+          accept=".xml,.musicxml,.mid,.midi,.pdf"
+          chooseLabel="Seleccionar archivo"
+          chooseIcon="pi pi-upload"
+          [auto]="true"
+          (onSelect)="onFileSelect($event)"
+          styleClass="w-full"
+        ></p-fileUpload>
+
+        <p class="hint-text text-muted">
+          Formatos: .xml, .musicxml, .mid, .midi
+        </p>
+
+        <!-- Aviso PDF -->
+        <div class="pdf-notice" *ngIf="pdfWarning()">
+          <i class="pi pi-info-circle"></i>
+          <div>
+            <strong>PDF no soportado directamente</strong>
+            <p>
+              Convierte tu partitura a MusicXML con
+              <a href="https://musescore.org" target="_blank" rel="noopener noreferrer">MuseScore</a>
+              (gratuito) y cárgala aquí.
+            </p>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Partituras de ejemplo -->
+      <p-card styleClass="sidebar-card">
+        <ng-template pTemplate="header">
+          <div class="card-header-row">
+            <span class="card-header-label">Ejemplos</span>
+          </div>
+        </ng-template>
+
+        <div class="builtin-list">
+          <div
+            class="builtin-item"
+            *ngFor="let s of score.builtInScores"
+            [class.builtin-item--active]="currentTitle() === s.title"
+            (click)="loadBuiltIn(s.id)"
+          >
+            <i class="pi pi-file-edit"></i>
+            <span>{{ s.title }}</span>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Partitura cargada -->
+      <p-card styleClass="sidebar-card" *ngIf="currentTitle()">
+        <ng-template pTemplate="header">
+          <div class="card-header-row">
+            <span class="card-header-label">Cargada</span>
+          </div>
+        </ng-template>
+
+        <div class="loaded-info">
+          <strong class="text-accent">{{ currentTitle() }}</strong>
+          <span class="text-muted" style="font-size: 0.8rem">{{ noteCount() }} notas</span>
+          <p-tag
+            *ngIf="score.currentScore()?.key"
+            [value]="score.currentScore()!.key!"
+            severity="secondary"
+            styleClass="mt-2"
+          ></p-tag>
+        </div>
+
+        <div class="loaded-actions">
+          <p-button
+            label="Ir a Práctica"
+            icon="pi pi-play"
+            severity="success"
+            styleClass="w-full"
+            routerLink="/practice"
+          ></p-button>
+          <p-button
+            label="Quitar"
+            icon="pi pi-trash"
+            severity="danger"
+            [outlined]="true"
+            styleClass="w-full"
+            (onClick)="clearScore()"
+          ></p-button>
+        </div>
+      </p-card>
+
+    </div>
+
+    <!-- Área principal: render OSMD -->
+    <div class="score-main">
+      <p-card styleClass="osmd-card">
+        <ng-template pTemplate="header">
+          <div class="card-header-row">
+            <span class="card-header-label">Vista de partitura</span>
+            <span class="text-muted" style="font-size: 0.8rem" *ngIf="currentTitle()">
+              {{ currentTitle() }}
+            </span>
+          </div>
+        </ng-template>
+
+        <!-- Loading -->
+        <div class="osmd-loading" *ngIf="score.isLoading()">
+          <p-progressSpinner strokeWidth="3"></p-progressSpinner>
+          <span class="text-muted">Cargando partitura...</span>
+        </div>
+
+        <!-- Error -->
+        <div class="osmd-error" *ngIf="score.error()">
+          <i class="pi pi-exclamation-triangle" style="color: var(--app-danger); font-size: 2rem"></i>
+          <span class="text-muted">{{ score.error() }}</span>
+        </div>
+
+        <!-- Placeholder -->
+        <div class="osmd-placeholder" *ngIf="!currentTitle() && !score.isLoading() && !score.error()">
+          <i class="pi pi-file-edit osmd-placeholder-icon"></i>
+          <p class="text-muted">Carga una partitura para visualizarla aquí</p>
+        </div>
+
+        <!-- MIDI: sin render visual -->
+        <div class="osmd-placeholder" *ngIf="isMidiScore() && !score.isLoading()">
+          <i class="pi pi-headphones osmd-placeholder-icon"></i>
+          <p class="text-muted">MIDI cargado — {{ noteCount() }} notas</p>
+          <p class="text-muted" style="font-size: 0.82rem; margin-top: 0.25rem">
+            La vista gráfica no está disponible para MIDI.<br>
+            Usa el módulo de Práctica para comenzar.
+          </p>
+        </div>
+
+        <!-- Contenedor OSMD (solo MusicXML) -->
+        <div #osmdContainer class="osmd-container" [class.osmd-container--hidden]="!currentTitle() || isMidiScore()"></div>
+
+      </p-card>
+    </div>
+
+  </div>
+</div>

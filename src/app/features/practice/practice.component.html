@@ -1,0 +1,209 @@
+<div class="practice-page animate-fade-in-up">
+
+  <!-- Header -->
+  <div class="practice-page__header">
+    <h1 class="practice-page__title">Modo Práctica</h1>
+    <p class="practice-page__subtitle text-muted">
+      Carga una partitura y practica nota a nota con feedback en tiempo real
+    </p>
+  </div>
+
+  <!-- Sin partitura cargada -->
+  <div class="no-score-state" *ngIf="!hasScore()">
+    <p-card styleClass="no-score-card">
+      <div class="no-score-content">
+        <i class="pi pi-music no-score-icon"></i>
+        <h3>No hay partitura cargada</h3>
+        <p class="text-muted">Ve a <strong>Partituras</strong> para cargar un archivo MusicXML</p>
+        <p-button
+          label="Ir a Partituras"
+          icon="pi pi-arrow-right"
+          routerLink="/scores"
+          severity="secondary"
+        ></p-button>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Práctica activa -->
+  <ng-container *ngIf="hasScore()">
+
+    <!-- Estado: Terminado -->
+    <div class="finished-state" *ngIf="practiceState() === 'finished'">
+      <p-card styleClass="results-card">
+        <div class="results-content">
+          <div class="results-trophy">🏆</div>
+          <h2>¡Sesión completada!</h2>
+          <p class="text-muted">{{ score.currentScore()?.title }}</p>
+
+          <div class="results-stats">
+            <div class="stat-item">
+              <span class="stat-value text-accent">{{ accuracy() }}%</span>
+              <span class="stat-label text-muted">Precisión</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" style="color: var(--app-success)">{{ correctCount() }}</span>
+              <span class="stat-label text-muted">Correctas</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" style="color: var(--app-danger)">{{ incorrectCount() }}</span>
+              <span class="stat-label text-muted">Incorrectas</span>
+            </div>
+          </div>
+
+          <div class="results-actions">
+            <p-button label="Volver a intentar" icon="pi pi-refresh" (onClick)="restartPractice()" severity="success"></p-button>
+            <p-button label="Cambiar partitura" icon="pi pi-folder-open" routerLink="/scores" severity="secondary"></p-button>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Estado: Práctica (idle, playing, paused) -->
+    <div class="practice-layout" *ngIf="practiceState() !== 'finished'">
+
+      <!-- Barra de progreso -->
+      <div class="progress-bar-section">
+        <div class="progress-info">
+          <span class="text-muted" style="font-size: 0.85rem">
+            {{ score.currentScore()?.title }}
+          </span>
+          <span class="text-muted" style="font-size: 0.85rem">
+            {{ currentIndex() }} / {{ notes().length }}
+          </span>
+        </div>
+        <p-progressBar [value]="progress()" [showValue]="false" styleClass="practice-progress"></p-progressBar>
+      </div>
+
+      <div class="practice-grid">
+
+        <!-- Nota actual a tocar -->
+        <p-card styleClass="practice-card practice-card--target">
+          <ng-template pTemplate="header">
+            <div class="card-header-row">
+              <span class="card-header-label">Nota a tocar</span>
+              <p-badge
+                *ngIf="currentNote()?.isRest"
+                value="Silencio"
+                severity="secondary"
+              ></p-badge>
+            </div>
+          </ng-template>
+
+          <div class="note-center">
+            <app-note-display
+              [note]="currentNote()?.note ?? null"
+              size="large"
+              [showOctave]="true"
+            ></app-note-display>
+          </div>
+
+          <div class="note-duration text-muted" *ngIf="currentNote()">
+            Duración: {{ currentNote()!.duration === 1 ? 'Negra' : currentNote()!.duration === 0.5 ? 'Corchea' : currentNote()!.duration === 2 ? 'Blanca' : 'Redonda' }}
+          </div>
+        </p-card>
+
+        <!-- Nota detectada -->
+        <p-card styleClass="practice-card practice-card--detected">
+          <ng-template pTemplate="header">
+            <div class="card-header-row">
+              <span class="card-header-label">Tocando ahora</span>
+            </div>
+          </ng-template>
+
+          <div class="note-center">
+            <app-note-display
+              [note]="pitch.detectedNote()?.note ?? null"
+              size="large"
+              [showOctave]="true"
+            ></app-note-display>
+          </div>
+
+          <div class="volume-row" *ngIf="audio.isListening()">
+            <app-volume-meter [volume]="audio.volume()"></app-volume-meter>
+          </div>
+        </p-card>
+
+        <!-- Feedback -->
+        <p-card styleClass="practice-card practice-card--feedback">
+          <ng-template pTemplate="header">
+            <div class="card-header-row">
+              <span class="card-header-label">Resultado</span>
+            </div>
+          </ng-template>
+
+          <app-feedback-indicator
+            [state]="feedback()"
+            [subMessage]="feedbackSub()"
+          ></app-feedback-indicator>
+        </p-card>
+
+        <!-- Stats + controles -->
+        <p-card styleClass="practice-card practice-card--controls">
+          <ng-template pTemplate="header">
+            <div class="card-header-row">
+              <span class="card-header-label">Estadísticas</span>
+            </div>
+          </ng-template>
+
+          <div class="stats-row">
+            <div class="mini-stat">
+              <span class="mini-stat__value" style="color: var(--app-success)">{{ correctCount() }}</span>
+              <span class="mini-stat__label">✓ Correctas</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-stat__value" style="color: var(--app-danger)">{{ incorrectCount() }}</span>
+              <span class="mini-stat__label">✗ Incorrectas</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-stat__value text-accent">{{ accuracy() }}%</span>
+              <span class="mini-stat__label">Precisión</span>
+            </div>
+          </div>
+
+          <p-divider></p-divider>
+
+          <div class="control-buttons">
+            <p-button
+              *ngIf="practiceState() === 'idle'"
+              label="Comenzar"
+              icon="pi pi-play"
+              severity="success"
+              styleClass="w-full"
+              (onClick)="startPractice()"
+            ></p-button>
+
+            <p-button
+              *ngIf="practiceState() === 'playing'"
+              label="Pausar"
+              icon="pi pi-pause"
+              severity="warning"
+              styleClass="w-full"
+              (onClick)="pausePractice()"
+            ></p-button>
+
+            <p-button
+              *ngIf="practiceState() === 'paused'"
+              label="Continuar"
+              icon="pi pi-play"
+              severity="success"
+              styleClass="w-full"
+              (onClick)="pausePractice()"
+            ></p-button>
+
+            <p-button
+              *ngIf="practiceState() !== 'idle'"
+              label="Detener"
+              icon="pi pi-stop"
+              severity="danger"
+              [outlined]="true"
+              styleClass="w-full"
+              (onClick)="stopPractice()"
+            ></p-button>
+          </div>
+        </p-card>
+
+      </div>
+    </div>
+  </ng-container>
+</div>

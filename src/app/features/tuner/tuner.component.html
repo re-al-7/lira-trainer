@@ -1,0 +1,134 @@
+<div class="tuner-page animate-fade-in-up">
+
+  <!-- Header -->
+  <div class="tuner-page__header">
+    <h1 class="tuner-page__title">Afinador</h1>
+    <p class="tuner-page__subtitle text-muted">Toca una nota en tu lira y detectaremos la afinación en tiempo real</p>
+  </div>
+
+  <!-- Error de permisos -->
+  <div class="tuner-page__error" *ngIf="audio.error()">
+    <p-card styleClass="error-card">
+      <div class="flex align-items-center gap-3">
+        <i class="pi pi-microphone-slash" style="font-size: 1.5rem; color: var(--app-danger)"></i>
+        <div>
+          <strong>Sin acceso al micrófono</strong>
+          <p class="text-muted" style="margin-top: 4px; font-size: 0.85rem">
+            Permite el acceso al micrófono en tu navegador y recarga la página.
+          </p>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Main grid -->
+  <div class="tuner-grid">
+
+    <!-- Nota detectada -->
+    <p-card styleClass="tuner-card tuner-card--main">
+      <ng-template pTemplate="header">
+        <div class="card-header-row">
+          <span class="card-header-label">Nota detectada</span>
+          <p-tag
+            *ngIf="pitch.detectedNote()"
+            [value]="tuningLabel()"
+            [severity]="tuningTagSeverity()"
+          ></p-tag>
+        </div>
+      </ng-template>
+
+      <div class="note-center">
+        <app-note-display
+          [note]="pitch.detectedNote()?.note ?? null"
+          size="large"
+          [showOctave]="true"
+          [showFrequency]="true"
+        ></app-note-display>
+      </div>
+    </p-card>
+
+    <!-- Indicador de afinación (knob) -->
+    <p-card styleClass="tuner-card tuner-card--knob">
+      <ng-template pTemplate="header">
+        <div class="card-header-row">
+          <span class="card-header-label">Afinación</span>
+        </div>
+      </ng-template>
+
+      <div class="knob-wrapper">
+        <div class="knob-center-mark" pTooltip="Centro = Perfectamente afinado"></div>
+        <p-knob
+          [ngModel]="knobValue()"
+          [min]="0"
+          [max]="100"
+          [readonly]="true"
+          [size]="160"
+          valueTemplate="{value}"
+          [ngClass]="'knob-' + tuningStatus()"
+          strokeWidth="8"
+        ></p-knob>
+        <div class="knob-labels">
+          <span class="text-muted">♭ Grave</span>
+          <span class="text-muted">Agudo ♯</span>
+        </div>
+        <div class="cents-display" [ngClass]="'cents-' + tuningStatus()">
+          {{ cents() > 0 ? '+' : '' }}{{ cents() }} cents
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Control de micrófono + volumen -->
+    <p-card styleClass="tuner-card tuner-card--mic">
+      <ng-template pTemplate="header">
+        <div class="card-header-row">
+          <span class="card-header-label">Micrófono</span>
+          <span
+            class="mic-status-dot"
+            [class.mic-status-dot--active]="audio.isListening()"
+          ></span>
+        </div>
+      </ng-template>
+
+      <div class="mic-controls">
+        <p-button
+          [label]="audio.isListening() ? 'Detener' : 'Activar Micrófono'"
+          [icon]="audio.isListening() ? 'pi pi-stop-circle' : 'pi pi-microphone'"
+          [severity]="audio.isListening() ? 'danger' : 'success'"
+          [loading]="false"
+          (onClick)="toggleMic()"
+          styleClass="mic-btn w-full"
+        ></p-button>
+
+        <div class="volume-section" *ngIf="audio.isListening()">
+          <app-volume-meter [volume]="audio.volume()"></app-volume-meter>
+        </div>
+
+        <div class="mic-hint text-muted" *ngIf="!audio.isListening()">
+          <i class="pi pi-info-circle"></i>
+          Necesitas HTTPS o localhost para usar el micrófono
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Referencia: notas de la lira -->
+    <p-card styleClass="tuner-card tuner-card--reference">
+      <ng-template pTemplate="header">
+        <div class="card-header-row">
+          <span class="card-header-label">Notas de la Lira</span>
+          <span class="text-muted" style="font-size: 0.75rem">Do Mayor</span>
+        </div>
+      </ng-template>
+
+      <div class="note-reference-grid">
+        <div
+          class="note-ref-item"
+          *ngFor="let n of ['Do','Re','Mi','Fa','Sol','La','Si']"
+          [class.note-ref-item--active]="pitch.detectedNote()?.note?.name === n"
+        >
+          {{ n }}
+        </div>
+      </div>
+    </p-card>
+
+  </div>
+</div>

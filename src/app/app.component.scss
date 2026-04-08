@@ -1,0 +1,79 @@
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--app-bg);
+}
+
+// ── Navbar ────────────────────────────────────────────────────────
+.app-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 64px;
+  background: var(--app-surface);
+  border-bottom: 1px solid var(--app-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+  }
+
+  &__logo {
+    font-size: 1.8rem;
+    color: var(--app-accent);
+    line-height: 1;
+    filter: drop-shadow(0 0 8px var(--app-accent-glow));
+  }
+
+  &__title {
+    font-family: var(--app-font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--app-text);
+    letter-spacing: 0.04em;
+  }
+
+  &__links {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: var(--app-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.15s ease;
+
+    i { font-size: 0.85rem; }
+
+    &:hover {
+      color: var(--app-text);
+      background: var(--app-surface-2);
+    }
+
+    &--active {
+      color: var(--app-accent);
+      background: rgba(0, 196, 180, 0.12);
+      font-weight: 500;
+    }
+  }
+}
+
+// ── Main ─────────────────────────────────────────────────────────
+.app-main {
+  flex: 1;
+  overflow-y: auto;
+}
