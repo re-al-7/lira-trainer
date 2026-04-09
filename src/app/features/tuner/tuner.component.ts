@@ -4,6 +4,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { AudioService } from '../../core/services/audio.service';
 import { PitchDetectionService } from '../../core/services/pitch-detection.service';
+import { LYRE_DIATONIC_NOTES } from '../../core/models/note.model';
 import { NoteDisplayComponent } from '../../shared/components/note-display/note-display.component';
 import { VolumeMeterComponent } from '../../shared/components/volume-meter/volume-meter.component';
 import { CardModule } from 'primeng/card';
@@ -27,6 +28,9 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./tuner.component.scss'],
 })
 export class TunerComponent implements OnInit, OnDestroy {
+
+  // Notas diatónicas de la lira (Do5 a Re7) para referencia visual
+  readonly lyreNotes = LYRE_DIATONIC_NOTES.map(n => `${n.name}${n.octave}`);
 
   constructor(
     public audio: AudioService,
@@ -88,5 +92,13 @@ export class TunerComponent implements OnInit, OnDestroy {
         await this.pitch.startDetection();
       }
     }
+  }
+
+  /** Verifica si la nota pasada está actualmente activa */
+  isActiveNote(noteLabel: string): boolean {
+    const detected = this.pitch.detectedNote();
+    if (!detected) return false;
+    const detectedLabel = `${detected.note.name}${detected.note.octave}`;
+    return detectedLabel === noteLabel;
   }
 }

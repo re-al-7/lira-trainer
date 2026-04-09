@@ -84,8 +84,10 @@ export class PitchDetectionService {
       const detector = this.pitchyModule.PitchDetector.forFloat32Array(buffer.length);
       const [frequency, clarity] = detector.findPitch(buffer, sampleRate);
 
-      if (clarity < this.clarityThreshold() || frequency < 60 || frequency > 2000) {
+      if (clarity < this.clarityThreshold() || frequency < 400 || frequency > 2500) {
         // Ruido o silencio: limpiar suavizado gradualmente
+        // Rango de Lira Militar: Do5 (523 Hz) a Re7 (2349 Hz)
+        // Permitimos un margen de seguridad: 400-2500 Hz
         if (this.smoothingBuffer.length > 0) {
           this.smoothingBuffer.shift();
         }

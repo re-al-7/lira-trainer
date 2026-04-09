@@ -115,15 +115,15 @@
       <ng-template pTemplate="header">
         <div class="card-header-row">
           <span class="card-header-label">Notas de la Lira</span>
-          <span class="text-muted" style="font-size: 0.75rem">Do Mayor</span>
+          <span class="text-muted" style="font-size: 0.75rem">Do5 - Re7 (27 teclas)</span>
         </div>
       </ng-template>
 
       <div class="note-reference-grid">
         <div
           class="note-ref-item"
-          *ngFor="let n of ['Do','Re','Mi','Fa','Sol','La','Si']"
-          [class.note-ref-item--active]="pitch.detectedNote()?.note?.name === n"
+          *ngFor="let n of lyreNotes"
+          [class.note-ref-item--active]="isActiveNote(n)"
         >
           {{ n }}
         </div>
