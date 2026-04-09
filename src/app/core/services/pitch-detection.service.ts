@@ -22,7 +22,12 @@ export class PitchDetectionService {
 
   /** Buffer de suavizado: evita flickering mostrando la nota más frecuente */
   private smoothingBuffer: string[] = [];
-  private readonly SMOOTHING_SIZE = 4;
+  private readonly SMOOTHING_SIZE = 12; // Aumentado de 4 a 12 para más estabilidad
+
+  /** Persistencia de nota: mantiene la nota visible por más tiempo */
+  private lastNote: DetectedNote | null = null;
+  private noteHoldTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly NOTE_HOLD_DURATION_MS = 800; // Mantener nota visible por 800ms
 
   // ── Internos ──────────────────────────────────────────────────
   private pitchyModule: any = null;
@@ -57,8 +62,13 @@ export class PitchDetectionService {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
+    if (this.noteHoldTimeout !== null) {
+      clearTimeout(this.noteHoldTimeout);
+      this.noteHoldTimeout = null;
+    }
     this.isDetecting.set(false);
     this.detectedNote.set(null);
+    this.lastNote = null;
     this.smoothingBuffer = [];
   }
 
@@ -79,7 +89,10 @@ export class PitchDetectionService {
         if (this.smoothingBuffer.length > 0) {
           this.smoothingBuffer.shift();
         }
-        if (this.smoothingBuffer.length === 0) {
+        // Si el buffer está vacío y hay una nota guardada, mantenerla temporalmente
+        if (this.smoothingBuffer.length === 0 && this.lastNote) {
+          // No limpiar la nota inmediatamente, dejar que el timeout la limpie
+        } else if (this.smoothingBuffer.length === 0) {
           this.detectedNote.set(null);
         }
         return;
@@ -98,13 +111,31 @@ export class PitchDetectionService {
       const dominantKey = this._mostFrequent(this.smoothingBuffer);
       if (dominantKey !== noteKey) return; // No es la nota dominante aún
 
-      this.detectedNote.set({
+      const detectedNote: DetectedNote = {
         note,
         detectedFrequency: frequency,
         cents,
         clarity,
         timestamp: Date.now()
-      });
+      };
+
+      // Guardar la nota y actualizar inmediatamente
+      this.lastNote = detectedNote;
+      this.detectedNote.set(detectedNote);
+
+      // Reiniciar el timeout de persistencia cada vez que detectamos la misma nota
+      if (this.noteHoldTimeout !== null) {
+        clearTimeout(this.noteHoldTimeout);
+      }
+
+      // Programar limpieza de la nota después del período de hold
+      this.noteHoldTimeout = setTimeout(() => {
+        // Solo limpiar si sigue siendo la misma nota (no ha llegado una nueva)
+        if (this.lastNote === detectedNote) {
+          this.detectedNote.set(null);
+          this.lastNote = null;
+        }
+      }, this.NOTE_HOLD_DURATION_MS);
 
     } catch (err) {
       // Silenciar errores de buffer — ocurren normalmente al inicio
